@@ -1,18 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import FormContainer from '../components/formContainer'
+import { useDispatch, useSelector } from 'react-redux'
+import { addOrphanage } from '../actions/orphanageActions'
+import Loading from '../components/loader.jsx'
+import Message from '../components/message.jsx'
 
-const AddOrphanageView = () => {
+const AddOrphanageView = ({ match, history }) => {
+  const orphanageId = match.params.id
+
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [state, setState] = useState('')
   const [city, setCity] = useState('')
   const [contact, setContact] = useState('')
-  const [rating, setRating] = useState(0)
+  const [rating, setRating] = useState(1)
   const [image, setImage] = useState('')
 
-  const submitHandler = () => {}
+  const dispatch = useDispatch()
+  const orphanagesAdd = useSelector((state) => state.orphanagesAdd)
+  const { loading, error, success } = orphanagesAdd
+
+  useEffect(() => {
+    if (success) {
+      history.push('/')
+    }
+  }, [dispatch, history, orphanageId, success])
+
+  const submitHandler = () => {
+    dispatch(
+      addOrphanage({
+        name: name,
+        image: image,
+        address: address.split(","),
+        city: city,
+        state: state,
+        contact: contact,
+        rating: rating,
+      })
+    )
+  }
 
   return (
     <>
@@ -21,6 +49,8 @@ const AddOrphanageView = () => {
       </Link>
       <FormContainer>
         <h1>Add Orphanage</h1>
+        {loading && <Loading />}
+        {error && <Message variant='danger'>{error}</Message>}
         <Form onSubmit={submitHandler}></Form>
         <Form.Group controlId='name'>
           <Form.Label>Name</Form.Label>
@@ -59,7 +89,7 @@ const AddOrphanageView = () => {
           ></Form.Control>
         </Form.Group>
         <Form.Group controlId='contact'>
-          <Form.Label>Image</Form.Label>
+          <Form.Label>Conatct</Form.Label>
           <Form.Control
             type='number'
             placeholder='Enter contact'
@@ -68,7 +98,7 @@ const AddOrphanageView = () => {
           ></Form.Control>
         </Form.Group>
         <Form.Group controlId='image'>
-          <Form.Label>Contact</Form.Label>
+          <Form.Label>Image Url</Form.Label>
           <Form.Control
             type='text'
             placeholder='Enter Image Url'
