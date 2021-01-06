@@ -30,7 +30,8 @@
     "start-server": "cd .. && cd server && venv/bin/flask run --no-debugger",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "heroku-build":"NPM_CONFIG_PRODUCTION=false npm run build && cd .. && flask run"
   },
   "eslintConfig": {
     "extends": [

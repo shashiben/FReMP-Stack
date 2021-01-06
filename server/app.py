@@ -3,15 +3,17 @@ from pymongo import MongoClient
 from bson import ObjectId
 import json
 import os
-app = Flask(__name__)
+app = Flask(__name__, static_folder="/orphanage/build")
+
 client = MongoClient(
     "mongodb+srv://shashiben:shashiben@cluster0.dsnoz.gcp.mongodb.net/untitled?retryWrites=true&w=majority")
 db = client.orphanage
 orphanages = db.orphanages
 
-@app.route('/',methods=["GET"])
+
+@app.route('/', methods=["GET"])
 def hello():
-    return ('Yo!',201)
+    return app.send_static_file('/orphanage/build/index.html')
 
 
 @app.route('/orphanagesList', methods=["GET"])
@@ -57,20 +59,22 @@ def getDetails(id):
 
 @app.route('/orphanage/<id>', methods=["DELETE"])
 def deleteorphange(id):
-    documents = orphanages.delete_one({"_id": ObjectId(id)})
+    orphanages.delete_one({"_id": ObjectId(id)})
     return ("Deleted Successfully", 201)
 
 
-@app.route('/search/<keyword>',methods=["GET"])
+@app.route('/search/<keyword>', methods=["GET"])
 def search(keyword):
-    regex="^"+keyword
-    myquery = {"name": {"$regex": regex,"$options":'i'}}
+    regex = "^"+keyword
+    myquery = {"name": {"$regex": regex, "$options": 'i'}}
     documents = orphanages.find(myquery)
     response = []
     for document in documents:
         document['_id'] = str(document['_id'])
         response.append(document)
     return json.dumps(response)
-if __name__== "__main__":
-    PORT=int(os.environ.get('PORT',5000))
-    app.run(host='0.0.0.0',port=PORT,debug=False)
+
+
+if __name__ == "__main__":
+    PORT = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=PORT, debug=False)
