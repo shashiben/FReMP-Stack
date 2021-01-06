@@ -17,7 +17,7 @@ import {
 } from '../constants/orphanageConstant'
 import axios from 'axios'
 
-export const listOrphanages = () => async (dispatch) => {
+export const listOrphanages = (keyword='') => async (dispatch) => {
   try {
     dispatch({ type: ORPHANAGE_LIST_REQUEST })
     const config = {
@@ -142,6 +142,32 @@ export const deleteOrphanage = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ORPHANAGE_DELETE_ERROR,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const listOrphanagesByKeyword = (keyword) => async (dispatch) => {
+  try {
+    dispatch({ type: ORPHANAGE_LIST_REQUEST })
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+
+    const { data } = await axios.get(`/search/${keyword}`, config)
+    console.log(JSON.stringify(data))
+    dispatch({
+      type: ORPHANAGE_LIST_SUCCESS,
+      payload: data,
+    })
+  } catch (error) {
+    dispatch({
+      type: ORPHANAGE_LIST_ERROR,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

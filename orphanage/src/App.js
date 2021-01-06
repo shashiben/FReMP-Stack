@@ -17,6 +17,7 @@ const App = () => {
           <Route path='/addOrphanage' component={AddOrphanageView} />
           <Route path='/orphanage/:id/edit' component={EditOrphanageView} exact/>
           <Route path='/orphanage/:id' component={OrphangeDetailsView} exact/>
+          <Route path='/search/:keyword' component={HomeView}  />
           <Route path='/' component={HomeView} exact />
         </Container>
       </main>

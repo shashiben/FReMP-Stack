@@ -49,7 +49,20 @@ def getDetails(id):
         response.append(document)
     return json.dumps(response[0])
 
+
 @app.route('/orphanage/<id>', methods=["DELETE"])
 def deleteorphange(id):
     documents = orphanages.delete_one({"_id": ObjectId(id)})
     return ("Deleted Successfully", 201)
+
+
+@app.route('/search/<keyword>',methods=["GET"])
+def search(keyword):
+    regex="^"+keyword
+    myquery = {"name": {"$regex": regex,"$options":'i'}}
+    documents = orphanages.find(myquery)
+    response = []
+    for document in documents:
+        document['_id'] = str(document['_id'])
+        response.append(document)
+    return json.dumps(response)

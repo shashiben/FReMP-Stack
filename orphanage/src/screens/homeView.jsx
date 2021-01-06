@@ -4,15 +4,22 @@ import { Col, Row } from 'react-bootstrap'
 import Orphanage from '../components/orphanage'
 import Loading from '../components/loader.jsx'
 import Message from '../components/message.jsx'
-import { listOrphanages } from '../actions/orphanageActions'
+import { listOrphanages,listOrphanagesByKeyword } from '../actions/orphanageActions'
 
-const HomeView = () => {
+const HomeView = ({ match }) => {
+  const keyword = match.params.keyword
+
   const dispatch = useDispatch()
   const orphanagesList = useSelector((state) => state.orphanagesList)
   const { loading, error, orphanages } = orphanagesList
   useEffect(() => {
-    dispatch(listOrphanages())
-  }, [dispatch])
+    if(keyword && keyword.trim()){
+      dispatch(listOrphanagesByKeyword(keyword))
+      console.log(keyword)
+    }
+    
+    dispatch(listOrphanages(keyword))
+  }, [dispatch, keyword])
   return (
     <>
       <h1>Orphanages</h1>

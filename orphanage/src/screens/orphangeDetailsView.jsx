@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+  withScriptjs,
+  withGoogleMap,
+  GoogleMap,
+  Marker,
+} from 'react-google-maps'
+import {
   getorphanageDetails,
   deleteOrphanage,
 } from '../actions/orphanageActions'
@@ -27,7 +33,7 @@ const OrphanageDetailsView = ({ history, match }) => {
       dispatch({ type: ORPHANAGE_DELETE_RESET })
       history.push('/')
     }
-    console.log(orphanageId)
+    console.log(JSON.stringify(orphanage))
     if (orphanageId !== orphanage._id) {
       dispatch(getorphanageDetails(orphanageId))
     }
@@ -37,9 +43,31 @@ const OrphanageDetailsView = ({ history, match }) => {
     history.push(`/orphanage/${orphanage._id}/edit`)
   }
 
-  const deleteOrphanage = () => {
+  const deleteOrphanag = () => {
     dispatch(deleteOrphanage(orphanageId))
   }
+
+  function Map() {
+    return (
+      <GoogleMap
+        defaultZoom={8}
+        defaultCenter={{
+          lat: Number(orphanage.address[0]),
+          lng: Number(orphanage.address[1]),
+        }}
+      >
+        <Marker
+          position={{
+            lat: Number(orphanage.address[0]),
+            lng: Number(orphanage.address[1]),
+          }}
+        />
+      </GoogleMap>
+    )
+  }
+
+  const MapScript = withScriptjs(withGoogleMap(Map))
+
   return (
     <>
       <Link className='btn btn-light my-3' to='/'>
@@ -74,7 +102,7 @@ const OrphanageDetailsView = ({ history, match }) => {
                 </Button>
               </ListGroup.Item>
               <ListGroup.Item>
-                <Button variant='Link' type='button' onClick={deleteOrphanage}>
+                <Button variant='Link' type='button' onClick={deleteOrphanag}>
                   Delete Orphanage
                 </Button>
               </ListGroup.Item>
@@ -104,10 +132,15 @@ const OrphanageDetailsView = ({ history, match }) => {
                     Navigate
                   </Button>
                 </ListGroup.Item>
+                <MapScript
+                  googleMapURL='https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyCXpbKdlST52FIWkboP_NmK5RtXmk2uv0M'
+                  loadingElement={<div style={{ height: `100%` }} />}
+                  containerElement={<div style={{ height: `400px` }} />}
+                  mapElement={<div style={{ height: `100%` }} />}
+                />
               </ListGroup>
             </Card>
           </Col>
-          <Col></Col>
         </Row>
       )}
     </>
