@@ -2,11 +2,16 @@ from flask import Flask, request
 from pymongo import MongoClient
 from bson import ObjectId
 import json
+import os
 app = Flask(__name__)
 client = MongoClient(
     "mongodb+srv://shashiben:shashiben@cluster0.dsnoz.gcp.mongodb.net/untitled?retryWrites=true&w=majority")
 db = client.orphanage
 orphanages = db.orphanages
+
+@app.route('/',methods=["GET"])
+def hello():
+    return ('Yo!',201)
 
 
 @app.route('/orphanagesList', methods=["GET"])
@@ -66,3 +71,6 @@ def search(keyword):
         document['_id'] = str(document['_id'])
         response.append(document)
     return json.dumps(response)
+if __name__== "__main__":
+    PORT=int(os.environ.get('PORT',5000))
+    app.run(host='0.0.0.0',port=PORT,debug=False)
